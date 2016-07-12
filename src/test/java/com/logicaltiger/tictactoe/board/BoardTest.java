@@ -7,6 +7,11 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
+/**
+ * Didn't want to spend the time on complete coverage
+ * of tests for this demo program.  Just a couple of
+ * tests to show that I can do them.
+ */
 public class BoardTest extends TestCase {
 	private Board board;
 	

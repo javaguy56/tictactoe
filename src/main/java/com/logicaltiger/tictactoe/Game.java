@@ -79,54 +79,64 @@ public class Game implements StringCallback, Runnable {
 	}
 	
 	public void gameSteps() {
+		boolean quitLoop = false;
 		
-		/*
-		 * Once the game begins the cycle is for X to move, test for win, Y to move, test for win, repeat.
-		 * The other logic deals with start or end of game conditions.
-		 */
-		if(EVAL_O_WINNING == gameStatus) {
-			gameStatus = PLAYER_X_MOVE;
-		} else if(PLAYER_X_MOVE == gameStatus || EVAL_X_WINNING == gameStatus || PLAYER_O_MOVE == gameStatus) {
-			gameStatus++;
-		}
+		while(true) {
+			
+			/*
+			 * Once the game begins the cycle is for X to move, test for win, Y to move, test for win, repeat.
+			 * The other logic deals with start or end of game conditions.
+			 */
+			if(EVAL_O_WINNING == gameStatus) {
+				gameStatus = PLAYER_X_MOVE;
+			} else if(PLAYER_X_MOVE == gameStatus || EVAL_X_WINNING == gameStatus || PLAYER_O_MOVE == gameStatus) {
+				gameStatus++;
+			}
 		
-		switch(gameStatus) {
-		case PLAYER_X_MOVE:
-			playerMove(playerX);
-			break;
-		case EVAL_X_WINNING:
-			evalGame();
-			break;
-		case PLAYER_O_MOVE:
-			playerMove(playerO);
-			break;
-		case EVAL_O_WINNING:
-			evalGame();
-			break;
-		case GAME_X_WON:
-			showWinner(playerX);
-			storeComputerLoss(playerO);
-			askForNewGame();
-			break;
-		case GAME_O_WON:
-			showWinner(playerO);
-			storeComputerLoss(playerX);
-			askForNewGame();
-			break;
-		case GAME_DRAW:
-			showDraw();
-			askForNewGame();
-			break;
-		case GAME_START:
-			whichPlayerX();
-			break;
-		case START_NEW_GAME:
-			TicTacToe.initialize();
-			break;
-		case QUIT_GAME:
-			break;
-		default:
-			break;
+			switch(gameStatus) {
+			case PLAYER_X_MOVE:
+				playerMove(playerX);
+				break;
+			case EVAL_X_WINNING:
+				evaluateGame();
+				break;
+			case PLAYER_O_MOVE:
+				playerMove(playerO);
+				break;
+			case EVAL_O_WINNING:
+				evaluateGame();
+				break;
+			case GAME_X_WON:
+				showWinner(playerX);
+				storeComputerLoss(playerO);
+				askForNewGame();
+				break;
+			case GAME_O_WON:
+				showWinner(playerO);
+				storeComputerLoss(playerX);
+				askForNewGame();
+				break;
+			case GAME_DRAW:
+				showDraw();
+				askForNewGame();
+				break;
+			case GAME_START:
+				whichPlayerX();
+				break;
+			case START_NEW_GAME:
+				TicTacToe.initialize();
+				quitLoop = true;
+				break;
+			case QUIT_GAME:
+				quitLoop = true;
+				break;
+			default:
+				break;
+			}
+		
+			if(quitLoop)
+				break;
+			
 		}
 		
 	}
@@ -155,10 +165,9 @@ public class Game implements StringCallback, Runnable {
 			board.setMark(code, currentPlayer.getMark());
 		}
 		
-		gameSteps();
 	}
 	
-	private void evalGame() {
+	private void evaluateGame() {
 		String winner = board.getWinner();
 		
 		if(Board.MARK_X.equals(winner)) {
@@ -169,7 +178,6 @@ public class Game implements StringCallback, Runnable {
 			gameStatus = GAME_DRAW;
 		}
 
-		gameSteps();
 	}
 	
 	private void showWinner(Player winningPlayer) {
@@ -205,7 +213,6 @@ public class Game implements StringCallback, Runnable {
 			gameStatus = QUIT_GAME;
 		}
 		
-		gameSteps();
 	}
 	
 	private void whichPlayerX() {
@@ -230,7 +237,6 @@ public class Game implements StringCallback, Runnable {
 
 		// The first move occurs by pretending we just finished move #0.
 		gameStatus = EVAL_O_WINNING;
-		gameSteps();
 	}
 	
 }

@@ -1,10 +1,8 @@
 package com.logicaltiger.tictactoe.ai;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import com.logicaltiger.tictactoe.board.Board;
 import com.logicaltiger.tictactoe.io.History;
