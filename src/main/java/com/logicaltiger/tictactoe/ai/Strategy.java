@@ -1,12 +1,13 @@
 package com.logicaltiger.tictactoe.ai;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 
 import com.logicaltiger.tictactoe.board.Board;
 import com.logicaltiger.tictactoe.io.History;
-import com.logicaltiger.tictactoe.io.StringCallback;
 import com.logicaltiger.tictactoe.player.Computer;
 
 public class Strategy {
@@ -29,14 +30,14 @@ public class Strategy {
 	 * Let the brains do all of the thinking.
 	 * The move is actually processed by the Game object.
 	 */
-	public void makeMove(StringCallback sc, String validMoves) {
+	public void makeMove(Consumer<String> c, String validMoves) {
 		String code = calculateMove(validMoves);
 		
 		Board b = this.board.clone();
 		b.setMark(code, computer.getMark());
 		this.losingPosition = b.getPosition();
 		
-		sc.fetchedString(code);
+		c.accept(code);
 	}
 
 	/**
@@ -60,30 +61,23 @@ public class Strategy {
 	public String calculateMove(String validMoves) {
 		String mark = computer.getMark();
 		StringBuffer sb = new StringBuffer();
+		List<String> losingPositions = history.getRotatedHistories();
 		Map<String, String> trials = new HashMap<String, String>();
-		
+
 		for(String code : validMoves.split("")) {
 			Board b = board.clone();
 			b.setMark(code, mark);
 			String trialPosition = b.getPosition();
 			trials.put(code, trialPosition);
-			boolean goodTry = true;
-			
-			for(String losingPosition : history.getRotatedHistories()) {
-				
-				if(losingPosition.equals(trialPosition)) {
-					goodTry = false;
-					break;
-				}
-				
-			}
-			
-			if(goodTry) {
+
+			// trialPosition::equals equivalent to (e -> e.equals(trialPosition))
+
+			if(!losingPositions.stream().anyMatch(trialPosition::equals)) {
 				sb.append(code);
 			}
-			
+
 		}
-		
+
 		String netMoves = (sb.length() == 0) ? validMoves : sb.toString();
 		int idx = 0;
 		int len = netMoves.length();

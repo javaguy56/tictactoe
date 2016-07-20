@@ -1,24 +1,30 @@
 package com.logicaltiger.tictactoe.io;
 
 import java.util.Scanner;
+import java.util.function.Consumer;
 
-import com.logicaltiger.tictactoe.io.StringCallback;
+import com.logicaltiger.tictactoe.io.Output;
 
 public class Input {
 	private Scanner in = new Scanner(System.in);
 
-	public void getAnswer(StringCallback sc, String charList) {
-		getValidChars(sc, charList, false);
+	private Output output;
+	
+	public void loadDependencies(Output output) {
+		this.output = output;
+	}
+	public void getAnswer(Consumer<String> c, String charList) {
+		getValidChars(c, charList, false);
 	}
 	
-	public void getMove(StringCallback sc, String charList) {
-		getValidChars(sc, charList, true);
+	public void getMove(Consumer<String> c, String charList) {
+		getValidChars(c, charList, true);
 	}
 	
     /**
-     * Requires a valid callback reference or the program goes zombie. 
+     * Requires a valid Consumer reference or the program goes zombie. 
      */
-	public void getValidChars(StringCallback sc, String charList, boolean addQ) {
+	public void getValidChars(Consumer<String> c, String charList, boolean addQ) {
 
 		/*
 		 * Always offer the "quit game" choice.
@@ -32,13 +38,14 @@ public class Input {
 			charList += "Q";
 
 		while(true) {
-            System.out.println("Enter a single value \nfrom this list " + charList 
+            output.show("Enter a single value");
+            output.show("from this list " + charList 
             		+ (addQ ? " (Q quits game)" : "") 
             		+ ", followed by the Enter key: ");
 	        String value = in.next().toUpperCase();
 	        
 	        if(validResponse(charList, value)) {
-	            sc.fetchedString(value);
+	            c.accept(value);
 	        	break;
 	        }
 		

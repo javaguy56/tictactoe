@@ -9,11 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.logicaltiger.tictactoe.board.Board;
+import com.logicaltiger.tictactoe.io.Output;
 
 public class History {
 	private List<String> actualHistory = new ArrayList<String>();
 	private List<String> rotatedHistories = new ArrayList<String>();
 	private static final String HISTORY_FILE_NAME = "tictactoe.txt";
+
+	private Output output;
+	
+	public void loadDependencies(Output output) {
+		this.output = output;
+	}
 	
 	public void loadHistory() {
 		this.actualHistory = new ArrayList<String>();
@@ -43,7 +50,7 @@ public class History {
 			}
 
 		} catch(IOException e) {
-			System.out.println("Can't finish loading file, quitting game");
+			output.show("Can't finish loading file, quitting game");
 			System.exit(-1);
 		} finally {
 			

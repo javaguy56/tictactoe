@@ -1,16 +1,17 @@
 package com.logicaltiger.tictactoe;
 
+import java.util.function.Consumer;
+
 import com.logicaltiger.tictactoe.ai.Strategy;
 import com.logicaltiger.tictactoe.board.Board;
 import com.logicaltiger.tictactoe.io.History;
 import com.logicaltiger.tictactoe.io.Input;
 import com.logicaltiger.tictactoe.io.Output;
-import com.logicaltiger.tictactoe.io.StringCallback;
 import com.logicaltiger.tictactoe.player.Computer;
 import com.logicaltiger.tictactoe.player.Human;
 import com.logicaltiger.tictactoe.player.Player;
 
-public class Game implements StringCallback, Runnable {
+public class Game implements Runnable {
 	private History history;
 	private Input input;
 	private Output output;
@@ -36,11 +37,6 @@ public class Game implements StringCallback, Runnable {
 	private int gameStatus;
 	private boolean firstTurn;
 	
-	private static final int MOVING = 1;
-	private static final int NEW_GAME = 2;
-	private static final int WHICH_X = 3;
-	private int inputPurpose;
-
 	public void loadDependencies(Strategy strategy, Board board, History history, Input input, Output output, Computer computer, Human human) {
 		this.strategy = strategy;
 		this.board = board;
@@ -54,23 +50,30 @@ public class Game implements StringCallback, Runnable {
 	public void run() {
 		begin();
 	}
-	
-	/*
-	 * In funneling everything to Input.getValidChars()
-	 * my implementation has one callback.  The inputPurpose
-	 * remembers why we are here.
-	 */
-	public void fetchedString(String value) {
-		
-		if(inputPurpose == MOVING) {
-			evaluateMove(value);
-		} else if(inputPurpose == NEW_GAME) {
-			evaluateNewGame(value);
-		} else if(inputPurpose == WHICH_X) {
-			evaluateWhichX(value);
-		}
-		
-	}
+
+    private Consumer<String> moveConsumer = new Consumer<String>() {
+
+    	public void accept(String move) {
+			evaluateMove(move);
+        }
+
+    };
+
+	private Consumer<String> newGameConsumer = new Consumer<String>() {
+
+		public void accept(String choice) {
+			evaluateNewGame(choice);
+        }
+
+    };
+
+	private Consumer<String> whichPlayerXConsumer = new Consumer<String>() {
+
+		public void accept(String choice) {
+			evaluateWhichX(choice);
+        }
+
+    };
 
 	public void begin() {
 		firstTurn = true;
@@ -143,7 +146,7 @@ public class Game implements StringCallback, Runnable {
 	
 	/**
 	 * The player is asked for the move, but the selected move
-	 * is delivered through evaluateMove().  
+	 * is delivered by way of moveConsumer().  
 	 */
 	public void playerMove(Player player) {
 		currentPlayer = player;
@@ -153,8 +156,7 @@ public class Game implements StringCallback, Runnable {
 		}
 		
 		firstTurn = false;
-		inputPurpose = MOVING;
-		player.makeMove(this, board.getValidMoves());
+		player.makeMove(moveConsumer, board.getValidMoves());
 	}
 	
 	private void evaluateMove(String code) {
@@ -201,8 +203,7 @@ public class Game implements StringCallback, Runnable {
 	
 	private void askForNewGame() {
 		output.show("Want to play again?");
-		inputPurpose = NEW_GAME;
-		input.getAnswer(this, "YN");
+		input.getAnswer(newGameConsumer, "YN");
 	}
 
 	private void evaluateNewGame(String code) {
@@ -217,8 +218,7 @@ public class Game implements StringCallback, Runnable {
 	
 	private void whichPlayerX() {
 		output.show("The 'X' goes first.  Should the Human or Computer go first?");
-		inputPurpose = WHICH_X;
-		input.getAnswer(this, "HC");
+		input.getAnswer(whichPlayerXConsumer, "HC");
 	}
 
 	private void evaluateWhichX(String code) {

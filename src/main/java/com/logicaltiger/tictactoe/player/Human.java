@@ -1,8 +1,9 @@
 package com.logicaltiger.tictactoe.player;
 
+import java.util.function.Consumer;
+
 import com.logicaltiger.tictactoe.io.Input;
 import com.logicaltiger.tictactoe.io.Output;
-import com.logicaltiger.tictactoe.io.StringCallback;
 
 public class Human implements Player {
 	private Input input = null;
@@ -28,12 +29,11 @@ public class Human implements Player {
 	
 	/**
 	 * Prompt the human that he/she must move.
-	 * The move is actually processed by the passed-in
-	 * Game object, acting as a callback destination.
+	 * The move is actually processed by way of the consumer.
 	 */
-	public void makeMove(StringCallback sc, String validMoves) {
+	public void makeMove(Consumer<String> c, String validMoves) {
 		output.show("Human player turn");
-		input.getMove(sc, validMoves);
+		input.getMove(c, validMoves);
 	}
 
 }

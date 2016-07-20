@@ -1,6 +1,6 @@
 package com.logicaltiger.tictactoe.player;
 
-import com.logicaltiger.tictactoe.io.StringCallback;
+import java.util.function.Consumer;
 
 public interface Player {
 	public static final String PLAYER_HUMAN = "Human";
@@ -12,6 +12,6 @@ public interface Player {
 	
 	public String getMark();
 	
-    public void makeMove(StringCallback sc, String validMoves);
+    public void makeMove(Consumer<String> c, String validMoves);
 	
 }

@@ -29,6 +29,8 @@ public class TicTacToe {
         Human human = new Human();
 
         strategy.loadDependencies(board, history, computer);
+        history.loadDependencies(output);
+        input.loadDependencies(output);
         computer.loadDependencies(strategy, output);
         human.loadDependencies(input, output);
         game.loadDependencies(strategy, board, history, input, output, computer, human);
